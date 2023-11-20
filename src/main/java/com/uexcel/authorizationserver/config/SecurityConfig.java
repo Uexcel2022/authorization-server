@@ -56,7 +56,7 @@ public class SecurityConfig {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain webFilterChainForOAuth(HttpSecurity httpSecurity) throws Exception {
+    SecurityFilterChain webFilterChainForOAuth(HttpSecurity httpSecurity) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(httpSecurity);
         httpSecurity.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .oidc(withDefaults());
@@ -77,14 +77,14 @@ public class SecurityConfig {
 
     }
 
-    @Bean
-    UserDetailsService userDetailsService() {
-        var user1 = User.withUsername("user")
-                .password(passwordEncoder().encode("password"))
-                .authorities("read")
-                .build();
-        return new InMemoryUserDetailsManager(user1);
-    }
+    // @Bean
+    // UserDetailsService userDetailsService() {
+    // var user1 = User.withUsername("user")
+    // .password(passwordEncoder().encode("password"))
+    // .authorities("read")
+    // .build();
+    // return new InMemoryUserDetailsManager(user1);
+    // }
 
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
