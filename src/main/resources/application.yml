@@ -4,7 +4,7 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:mariadb://locahost:3306/oauth2db
+    url: jdbc:mariadb://localhost:3306/oauth2db
     username: root
     password: jvman19
     driver-class-name: org.mariadb.jdbc.Driver

@@ -77,14 +77,14 @@ public class SecurityConfig {
 
     }
 
-    // @Bean
-    // UserDetailsService userDetailsService() {
-    // var user1 = User.withUsername("user")
-    // .password(passwordEncoder().encode("password"))
-    // .authorities("read")
-    // .build();
-    // return new InMemoryUserDetailsManager(user1);
-    // }
+    @Bean
+    UserDetailsService userDetailsService() {
+        var user1 = User.withUsername("user")
+                .password(passwordEncoder().encode("password"))
+                .authorities("read")
+                .build();
+        return new InMemoryUserDetailsManager(user1);
+    }
 
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
