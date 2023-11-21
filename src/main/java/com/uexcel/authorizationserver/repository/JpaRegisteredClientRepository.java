@@ -1,4 +1,4 @@
-package com.uexcel.authorizationserver.service;
+package com.uexcel.authorizationserver.repository;
 
 import org.springframework.security.jackson2.SecurityJackson2Modules;
 
@@ -22,7 +22,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uexcel.authorizationserver.entity.Client;
-import com.uexcel.authorizationserver.repository.ClientRepository;
 
 @Component
 public class JpaRegisteredClientRepository implements RegisteredClientRepository {
