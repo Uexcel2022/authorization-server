@@ -13,25 +13,27 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name = "user")
+@Table(name = "user", uniqueConstraints = @UniqueConstraint(name = "email_unique", columnNames = "email"))
 @AllArgsConstructor
 @NoArgsConstructor
 public class SecurityUsers {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+    private String name;
     @Column(nullable = false)
-    private String username;
+    private String email;
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_authorities", joinColumns = {
             @JoinColumn(name = "user_id", referencedColumnName = "userid") }, inverseJoinColumns = {
                     @JoinColumn(name = "authority_id", referencedColumnName = "Id") })

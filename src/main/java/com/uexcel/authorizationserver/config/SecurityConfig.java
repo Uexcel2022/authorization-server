@@ -14,8 +14,10 @@ import java.util.stream.Collectors;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -71,20 +73,25 @@ public class SecurityConfig {
     @Order(2)
     SecurityFilterChain appSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(
+                        auth -> auth.requestMatchers(HttpMethod.POST, "/registration").permitAll()
+                                .anyRequest()
+                                .authenticated())
                 .formLogin(withDefaults())
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+                // .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
                 .build();
 
     }
 
-    @Bean
-    UserDetailsService userDetailsService() {
-        var user1 = User.withUsername("user")
-                .password(passwordEncoder().encode("password"))
-                .authorities("read")
-                .build();
-        return new InMemoryUserDetailsManager(user1);
-    }
+    // @Bean
+    // UserDetailsService userDetailsService() {
+    // var user1 = User.withUsername("user")
+    // .password(passwordEncoder().encode("password"))
+    // .authorities("read")
+    // .build();
+    // return new InMemoryUserDetailsManager(user1);
+    // }
 
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
@@ -101,6 +108,7 @@ public class SecurityConfig {
                 .scope(OidcScopes.PROFILE)
                 .redirectUri("http://insomnia")
                 .redirectUri("http://127.0.0.1:8080/login/oauth2/code/client")
+                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
