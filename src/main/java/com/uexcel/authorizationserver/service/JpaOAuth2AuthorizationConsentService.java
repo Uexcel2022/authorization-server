@@ -4,21 +4,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.uexcel.authorizationserver.entity.AuthorizationConsent;
 import com.uexcel.authorizationserver.repository.AuthorizationConsentRepository;
 
-@Component
+@Service
 public class JpaOAuth2AuthorizationConsentService implements OAuth2AuthorizationConsentService {
 
     private final AuthorizationConsentRepository authorizationConsentRepository;
@@ -43,30 +42,14 @@ public class JpaOAuth2AuthorizationConsentService implements OAuth2Authorization
         Assert.notNull(authorizationConsent, "authorizationConsent cannot be null");
         this.authorizationConsentRepository.deleteByRegisteredClientIdAndPrincipalName(
                 authorizationConsent.getRegisteredClientId(), authorizationConsent.getPrincipalName());
-
     }
 
     @Override
-    @Nullable
     public OAuth2AuthorizationConsent findById(String registeredClientId, String principalName) {
         Assert.hasText(registeredClientId, "registeredClientId cannot be empty");
         Assert.hasText(principalName, "principalName cannot be empty");
         return this.authorizationConsentRepository.findByRegisteredClientIdAndPrincipalName(
                 registeredClientId, principalName).map(this::toObject).orElse(null);
-    }
-
-    private AuthorizationConsent toEntity(OAuth2AuthorizationConsent authorizationConsent) {
-        AuthorizationConsent entity = new AuthorizationConsent();
-        entity.setRegisteredClientId(authorizationConsent.getRegisteredClientId());
-        entity.setPrincipalName(authorizationConsent.getPrincipalName());
-
-        Set<String> authorities = new HashSet<>();
-        for (GrantedAuthority authority : authorizationConsent.getAuthorities()) {
-            authorities.add(authority.getAuthority());
-        }
-        entity.setAuthorities(StringUtils.collectionToCommaDelimitedString(authorities));
-
-        return entity;
     }
 
     private OAuth2AuthorizationConsent toObject(AuthorizationConsent authorizationConsent) {
@@ -88,6 +71,20 @@ public class JpaOAuth2AuthorizationConsentService implements OAuth2Authorization
         }
 
         return builder.build();
+    }
+
+    private AuthorizationConsent toEntity(OAuth2AuthorizationConsent authorizationConsent) {
+        AuthorizationConsent entity = new AuthorizationConsent();
+        entity.setRegisteredClientId(authorizationConsent.getRegisteredClientId());
+        entity.setPrincipalName(authorizationConsent.getPrincipalName());
+
+        Set<String> authorities = new HashSet<>();
+        for (GrantedAuthority authority : authorizationConsent.getAuthorities()) {
+            authorities.add(authority.getAuthority());
+        }
+        entity.setAuthorities(StringUtils.collectionToCommaDelimitedString(authorities));
+
+        return entity;
     }
 
 }

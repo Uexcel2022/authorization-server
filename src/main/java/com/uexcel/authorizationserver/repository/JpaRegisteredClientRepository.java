@@ -1,12 +1,16 @@
 package com.uexcel.authorizationserver.repository;
 
-import org.springframework.security.jackson2.SecurityJackson2Modules;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uexcel.authorizationserver.entity.Client;
+
+import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
@@ -14,17 +18,13 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uexcel.authorizationserver.entity.Client;
-
-@Component
+@Service
 public class JpaRegisteredClientRepository implements RegisteredClientRepository {
+
     private final ClientRepository clientRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -63,8 +63,6 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
                 client.getAuthorizationGrantTypes());
         Set<String> redirectUris = StringUtils.commaDelimitedListToSet(
                 client.getRedirectUris());
-        Set<String> postLogoutRedirectUris = StringUtils.commaDelimitedListToSet(
-                client.getPostLogoutRedirectUris());
         Set<String> clientScopes = StringUtils.commaDelimitedListToSet(
                 client.getScopes());
 
@@ -80,7 +78,6 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
                 .authorizationGrantTypes((grantTypes) -> authorizationGrantTypes
                         .forEach(grantType -> grantTypes.add(resolveAuthorizationGrantType(grantType))))
                 .redirectUris((uris) -> uris.addAll(redirectUris))
-                .postLogoutRedirectUris((uris) -> uris.addAll(postLogoutRedirectUris))
                 .scopes((scopes) -> scopes.addAll(clientScopes));
 
         Map<String, Object> clientSettingsMap = parseMap(client.getClientSettings());
@@ -113,8 +110,6 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
                 StringUtils.collectionToCommaDelimitedString(clientAuthenticationMethods));
         entity.setAuthorizationGrantTypes(StringUtils.collectionToCommaDelimitedString(authorizationGrantTypes));
         entity.setRedirectUris(StringUtils.collectionToCommaDelimitedString(registeredClient.getRedirectUris()));
-        entity.setPostLogoutRedirectUris(
-                StringUtils.collectionToCommaDelimitedString(registeredClient.getPostLogoutRedirectUris()));
         entity.setScopes(StringUtils.collectionToCommaDelimitedString(registeredClient.getScopes()));
         entity.setClientSettings(writeMap(registeredClient.getClientSettings().getSettings()));
         entity.setTokenSettings(writeMap(registeredClient.getTokenSettings().getSettings()));
